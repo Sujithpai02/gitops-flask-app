@@ -39,14 +39,12 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                            ${SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=gitops-flask-app \
-                            -Dsonar.sources=. \
-                            -Dsonar.python.version=3 \
-                        """
-                    }
+                    sh """
+                        ${SCANNER_HOME}/bin/sonar-scanner \
+                          -Dsonar.projectKey=gitops-flask-app \
+                          -Dsonar.sources=. \
+                          -Dsonar.python.version=3
+                    """
                 }
             }
         }
