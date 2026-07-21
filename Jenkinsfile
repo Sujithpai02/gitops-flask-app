@@ -45,7 +45,6 @@ pipeline {
                             -Dsonar.projectKey=gitops-flask-app \
                             -Dsonar.sources=. \
                             -Dsonar.python.version=3 \
-                            -Dsonar.token=$SONAR_TOKEN
                         """
                     }
                 }
