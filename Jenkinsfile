@@ -5,6 +5,7 @@ pipeline {
     environment {
         IMAGE_NAME = "sujith0227/gitops-flask-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
@@ -32,6 +33,30 @@ pipeline {
                     . venv/bin/activate
                     pytest -v
                 '''
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                        sh """
+                            ${SCANNER_HOME}/bin/sonar-scanner \
+                            -Dsonar.projectKey=gitops-flask-app \
+                            -Dsonar.sources=. \
+                            -Dsonar.python.version=3 \
+                            -Dsonar.token=$SONAR_TOKEN
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
 
