@@ -5,7 +5,6 @@ pipeline {
     environment {
         IMAGE_NAME = "sujith0227/gitops-flask-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
-        SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
@@ -39,15 +38,15 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                    sh """
-                        ${SCANNER_HOME}/bin/sonar-scanner \
+                    sh '''
+                        /var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarScanner/bin/sonar-scanner \
                         -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.token=$SONAR_TOKEN \
+                        -Dsonar.login=$SONAR_TOKEN \
                         -Dsonar.projectKey=gitops-flask-app \
                         -Dsonar.sources=. \
                         -Dsonar.python.version=3 \
                         -X
-                    """
+                    '''
                 }
             }
         }
@@ -104,6 +103,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo "Pipeline completed successfully!"
         }
@@ -111,5 +111,6 @@ pipeline {
         failure {
             echo "Pipeline failed!"
         }
+
     }
 }
